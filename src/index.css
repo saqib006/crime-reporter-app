@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+flex{
+  flex-grow: 1
+}
+
+menuButton {
+  margin-left: -12;
+  margin-right: 20;
+}
+a{
+  color: antiquewhite;
+text-decoration: none
+}
