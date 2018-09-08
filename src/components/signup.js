@@ -12,11 +12,17 @@ class SignUp extends Component{
             email:'',
             pass:'',
         }
-        console.log(props)
+   
      
     }
     changeHandler = eve =>{
         this.setState({[eve.target.name]: eve.target.value})
+    }
+
+    componentWillMount(){
+        if(this.props.user){
+            this.props.history.replace('/')
+        }
     }
 
     formHandler = () => {
@@ -104,7 +110,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return{
         addUser: userDetail => {return dispatch(authAction.signUp(userDetail))},
-        checkUser: ()=> {return dispatch(authAction.checkUser())}
+        
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp)

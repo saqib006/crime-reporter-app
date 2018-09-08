@@ -46,7 +46,7 @@ export class crimeEpic{
 
     static getCrimeFromFirebase(action$){
         return action$.ofType(crimeAction.GET_CRIME_PRO).switchMap(({payload})=>{
-            return Observable.fromPromise(getCrime()).map((array)=>{
+            return Observable.fromPromise(getCrime(payload)).map((array)=>{
                 return{
                     type:crimeAction.GET_CRIME_SUC,
                     payload:array
@@ -77,9 +77,13 @@ export class crimeEpic{
 
     
     static updateStatusOnFirebase(action$){
+
         return action$.ofType(crimeAction.UPDATE_STATUS_PRO).switchMap(({payload})=>{
             return Observable.fromPromise(updateStatus(payload)).map((payload)=>{
-                if(payload.arrayName === "crime"){
+
+                console.log(payload)
+
+               if(payload.arrayName === "crime"){
                     return{
                         type:crimeAction.CRIME_STATUS,
                         payload:payload
@@ -101,6 +105,8 @@ export class crimeEpic{
                 }
                 
             })
+            
         })
+        
     }
 }

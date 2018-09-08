@@ -1,6 +1,7 @@
 
 export default class crimeAction{
 
+
     static CRIME_PRO = 'CRIME_PRO';
     static CRIME_SUC = 'CRIME_SUC';
     static CRIME_ERR = 'CRIME_ERR';
@@ -31,6 +32,37 @@ export default class crimeAction{
     static COMPLAIN_STATUS = 'COMPLAIN_STATUS';
     static MISSING_STATUS = 'MISSING_STATUS';
 
+    static SEARCH_REPORT = 'SEARCH_REPORT';
+
+    static GET_USER_CRIME = 'GET_USER_CRIME';
+    static GET_USER_COMPLAIN = 'GET_USER_COMPLAIN';
+    static GET_USER_MISSING = 'GET_USER_MISSING';
+
+
+    /////  user reports ..........
+
+    static getUserMissing(userId){
+        return {
+            type:crimeAction.GET_USER_MISSING,
+            payload:userId
+        }
+    }
+
+    static getUserComplain(userId){
+        return{
+            type:crimeAction.GET_USER_COMPLAIN,
+            payload:userId
+        }
+    }
+
+    static getUserCrime(userId){
+        return{
+            type:crimeAction.GET_USER_CRIME,
+            payload:userId
+        }
+    }
+
+    //  add all reports ............
 
 
     static addCrime(crimeDetail){
@@ -40,12 +72,6 @@ export default class crimeAction{
         }
     }
 
-    static addCrimeSuc(payload){
-        return{
-            type: crimeAction.CRIME_SUC,
-            payload:payload
-        }
-    }
 
     static addCrimeErr(message){
         return{
@@ -64,12 +90,6 @@ export default class crimeAction{
         }
     }
 
-    static addMissingSuc(payload){
-        return{
-            type: crimeAction.MISSING_SUC,
-            payload:payload
-        }
-    }
     static addMissingErr(message){
         return{
             type: crimeAction.MISSING_ERR,
@@ -85,18 +105,17 @@ export default class crimeAction{
             payload:complainDetail
         }
     }
-    static addComplainSuc(payload){
-        return{
-            type: crimeAction.COMPLAIN_SUC,
-            payload:payload
-        }
-    }
+  
     static addComplainErr(message){
         return{
             type: crimeAction.COMPLAIN_ERR,
             payload:message
         }
     }
+
+
+
+    ///  update status ..........
 
     static updateStatus(statusUpdate){
         return{
@@ -105,6 +124,10 @@ export default class crimeAction{
         }
     }
 
+
+
+
+     //  get all reports ............
     static getComplain(){
         return{
             type:crimeAction.GET_COMPLAIN_PRO
@@ -113,7 +136,7 @@ export default class crimeAction{
 
     static getCrime(){
         return{
-            type:crimeAction.GET_CRIME_PRO
+            type:crimeAction.GET_CRIME_PRO,
         }
     }
 
@@ -122,5 +145,16 @@ export default class crimeAction{
             type:crimeAction.GET_MISSING_PRO
         }
     }
+
+        /////// search reports ..........
+
+    static searchReport(payload){
+        return{
+            type:crimeAction.SEARCH_REPORT,
+            payload:payload
+        }
+    }
    
+    
+
 }

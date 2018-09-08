@@ -1,4 +1,4 @@
-import { Button,Grid, InputLabel , Input, FormControl, TextField} from '@material-ui/core';
+import { Button,Grid, InputLabel , Input, FormControl, TextField, MenuItem ,Select} from '@material-ui/core';
 import crimeAction from '../store/action/crimeAction';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -8,9 +8,9 @@ class CrimeReport extends Component{
     constructor(props){
         super(props);
         this.state = {
-            name:'',
             title:'',
             description:'',
+            city:'',
             Drawer:false,
         }
         console.log(props)
@@ -28,19 +28,22 @@ class CrimeReport extends Component{
     }
 
     formHandler = () => {
+
         let crimeInfo = {
-            key:new Date().getTime(),
-            name:this.state.name,
+            userId:this.props.user.uid,
+            city:this.state.city,
             title:this.state.title,
             description:this.state.description
         }
+
+        console.log(crimeInfo)
 
         this.props.pushCrime(crimeInfo)
 
        
 
         this.setState({
-            name:'',
+            city:'',
             title:'',
             description:''
         })
@@ -56,16 +59,6 @@ class CrimeReport extends Component{
                 <Grid container spacing={16} alignItems="center" direction="column" justify="center" >
                     <Grid item xs={12} sm={6}  style={{marginTop:"10%"}}>
                     
-                    <FormControl fullWidth >
-                    <InputLabel htmlFor="name">Name</InputLabel>
-                    <Input
-                        id="name"
-                        name="name"
-                        value={this.state.name}
-                        onChange={this.changeHandler}
-                        
-                    />
-                    </FormControl>
 
                     <FormControl fullWidth >
                     <InputLabel htmlFor="title">Title</InputLabel>
@@ -76,6 +69,27 @@ class CrimeReport extends Component{
                         onChange={this.changeHandler}
                         
                     />
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                    <InputLabel htmlFor="city">City</InputLabel>
+                    <Select
+                        value={this.state.city}
+                        onChange={this.changeHandler}
+                        inputProps={{
+                        name: 'city',
+                        id: 'city',
+                        }}
+                    >
+                    {
+                        this.props.city.map(value => {
+                        return <MenuItem value={value}>{value}</MenuItem>
+                        })
+                    
+                    }
+                        
+                        <MenuItem >sadsada</MenuItem>
+                    </Select>
                     </FormControl>
 
                     <FormControl fullWidth >
@@ -110,6 +124,7 @@ class CrimeReport extends Component{
 
 const mapStateToProps = (state) => {
     return{
+        city:state.crimeReducer.city,
         user:state.authReducer.user,
         isLoading:state.crimeReducer.isLoading
     }
@@ -117,7 +132,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return{
-        pushCrime: (crimeDetail) => {return dispatch(crimeAction.addCrime(crimeDetail))}
+        pushCrime: (crimeDetail) => {return dispatch(crimeAction.addCrime(crimeDetail))},
+      
     }
 }
 

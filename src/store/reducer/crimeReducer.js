@@ -6,11 +6,18 @@ const INITIAL_STATE = {
     errMsg: '',
     crimeList: [],
     missingList:[],
-    complainList:[]
+    complainList:[],
+    city:["Karachi", "Lahore", "Peshawer", "Quetta", "Faislabad", "Hyderabad", "Sukkhar", "Multan","Abbottabad", "Bani Gala"],
+    userCrime:[],
+    userComplain:[],
+    userMissing:[],
+    searchList:[]
 }
 
 export default function crimeReducer(state = INITIAL_STATE, action){
     switch(action.type){
+
+        // add all reports........................
 
         case(crimeAction.CRIME_PRO):
             return Object.assign({}, state, {isLoading:true})
@@ -35,7 +42,7 @@ export default function crimeReducer(state = INITIAL_STATE, action){
             return Object.assign({}, state, {isErr:true,isLoading:false, errMsg:action.payload})
 
          
-        
+        // get all reports.........................
             
         case(crimeAction.GET_CRIME_PRO):
             return Object.assign({}, state, {isLoading:true})
@@ -52,39 +59,66 @@ export default function crimeReducer(state = INITIAL_STATE, action){
         case(crimeAction.GET_MISSING_SUC):
             return Object.assign({}, state,{isLoading:false, missingList:action.payload})
 
-
+        // update staus.....................
 
         case(crimeAction.UPDATE_STATUS_PRO):
             return Object.assign({}, state, {isLoading:true})
 
         case(crimeAction.COMPLAIN_STATUS):
-            //let index = state.complainList.findIndex(value => value.key === action.payload.key)
-            //return Object.assign({}, state, {isLoading:false,complainList:[...state.complainList[index].status = action.payload.status]})
-            let object = {...state};
-            let index = object.complainList.findIndex(ele => ele.key === action.payload.key)
-            object.complainList[index].status = action.payload.status;
-            return object;
+            let newComplainList = [...state.complainList];
+            let index = newComplainList.findIndex(ele => ele.key === action.payload.key)
+            newComplainList[index].status = action.payload.status;
+            return Object.assign({}, state, {isLoading:false, complainList:newComplainList});
             
-            
+
             
         case(crimeAction.MISSING_STATUS):
-           // let index2 = state.missingList.findIndex(value => value.key === action.payload.key)
-          //  return Object.assign({}, state, {isLoading:false,missingList:[...state.missingList[index2].status = action.payload.status]})
-
-            let object2 = {...state};
-            let index2 = object2.missingList.findIndex(ele => ele.key === action.payload.key)
-            object2.missingList[index2].status = action.payload.status;
-            return object2;
+            let newMissingList = [...state.missingList];
+            let index2 = newMissingList.findIndex(ele => ele.key === action.payload.key)
+            newMissingList[index2].status = action.payload.status;
+            return Object.assign({}, state, {isLoading:false, missingList:newMissingList});
 
         case(crimeAction.CRIME_STATUS):
-           // let index3 = state.crimeList.findIndex(value => value.key === action.payload.key)
-          //  return Object.assign({}, state, {isLoading:false,crimeList:[...state.crimeList[index3].status = action.payload.status]})
-            let object3 = {...state};
-            let index3 = object3.crimeList.findIndex(ele => ele.key === action.payload.key)
-            object3.crimeList[index3].status = action.payload.status;
-            return object3;
+            let newCrimeList = [...state.crimeList];
+            let index3 = newCrimeList.findIndex(ele => ele.key === action.payload.key)
+            newCrimeList[index3].status = action.payload.status;
+            return Object.assign({}, state, {isLoading:false, crimeList:newCrimeList});
+
+        ///   user reports .................
+
+        case(crimeAction.GET_USER_COMPLAIN):
+            let userComplainList = [...state.complainList]
+            return Object.assign({}, state, {userComplain:userComplainList.filter(value => value.userId == action.payload)})
+
+        case(crimeAction.GET_USER_MISSING):
+            let userMissingList = [...state.missingList]
+            return Object.assign({}, state, {userMissing:userMissingList.filter(value => value.userId == action.payload)})
+
+        case(crimeAction.GET_USER_CRIME):
+            let userCrimeList = [...state.crimeList]
+            return Object.assign({}, state, {userCrime:userCrimeList.filter(value => value.userId == action.payload)})
+     
+        // search reports by city .....................
+
+        case(crimeAction.SEARCH_REPORT):
+            if(action.payload.array === "crime"){
+            let newList = [...state.crimeList]
+            const result = newList.filter(value => value.city == action.payload.city)
+            return Object.assign({}, state, {searchList:result})
+            }
+
+            else if(action.payload.array === "missing"){
+            let newList = [...state.missingList]
+            const result = newList.filter(value => value.city == action.payload.city)
+            return Object.assign({}, state, {searchList:result})
+            }
+
+            else if(action.payload.array === "complain"){
+            let newList = [...state.complainList]
+            const result = newList.filter(value => value.city == action.payload.city)
+            return Object.assign({}, state, {searchList:result})
+            }
             
-          
                     
                   
         default:

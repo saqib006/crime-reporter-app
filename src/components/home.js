@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect}  from 'react-redux';
-import {Grid, Typography ,Button, Divider, Card ,CardContent} from '@material-ui/core';
+import {Grid, Typography ,Button, Divider, Card ,CardContent, FormControl, InputLabel, Input, Select, MenuItem, CardActions} from '@material-ui/core';
 import NavBar from '../container/navBar';
 import authAction from '../store/action/authAction';
 import {Link} from 'react-router-dom';
@@ -13,9 +13,16 @@ class Home extends Component{
 
         this.state = {
             Drawer:false,
+            city:'',
+            report:'',
+            reportList:["Crime Report", "Complain Report", "Missing Person"],
+            selectedArray:'',
+            search:[],
+            admin:false,
+            user:false,
         }
 
-        console.log(props)
+        console.log('constructor',props.missingList)
     }
 
     toggleDrawer = open => {
@@ -25,17 +32,113 @@ class Home extends Component{
         }
       };
     
-      componentWillMount(){
-          this.props.getCrime()
-          this.props.getComplain()
-          this.props.getMissing()
-      }
+     
     
 
+      componentDidMount(){
+        if(this.props.user){
+            const adminKey = "YLghvyjq2QVlW3MoFbZ9F6diHGV2"
+            if(this.props.user.uid == adminKey){
+              this.setState({
+                  admin:true
+              })
+            }
+            else if(this.state.admin == false){
+              this.setState({
+                  user:true
+              })
+            }
+            const userId = this.props.user.uid
+            this.props.getMyCrime(userId)
+            this.props.getMyComplain(userId)
+            this.props.getMissingPersons(userId)
+           
+        }
+
+        else{
+          this.setState({
+              user:false
+          })
+        }
+        
+    }
+      changeHandler = eve =>{
+
+        this.setState({[eve.target.name]: eve.target.value})
+
+        if(eve.target.name === "report" && eve.target.value !== ''){
+
+            if(eve.target.value === "Crime Report"){
+                    this.setState({
+                        selectedArray: 'crime'
+                    })
+            }
+
+            else if(eve.target.value === "Complain Report"){
+                this.setState({
+                    selectedArray: 'complain'
+                })
+            }
+
+            else if(eve.target.value === "Missing Person"){
+                this.setState({
+                    selectedArray: 'missing'
+                })
+            }
+           
+        }
+      
+    
+        
+    }
+
+
+    reviewHandler = (value) => {
+        console.log(value)
+        let updateInfo = {
+            key:value,
+            status:'Reviewd',
+            arrayName:this.state.selectedArray
+        }
+
+       
+        this.props.status(updateInfo)
+       
+        
+    }
+
+    searchHandler = (eve) => {
+
+
+        const { selectedArray} = this.state;
+        let search = {
+            array:selectedArray,
+            city:''
+        }
+        
+        this.setState({[eve.target.name]: eve.target.value})
+
+        if(eve.target.value !== '' ){
+            search.city = eve.target.value
+            this.props.searchReport(search)
+        }
+
+        
+    }
+
+    renderProps(props){
+        return(
+            <div>
+            <Button variant="contained" color="secondary"><Link to="/complains">View Complains {this.props.complainList.length}</Link></Button>
+                <Button variant="contained" color="secondary"><Link to="/crimes">View Crimes {this.props.crimeList.length}</Link></Button>
+                <Button variant="contained" color="secondary"><Link to="/missingpersons">View Missing Person {this.props.missingList.length}</Link></Button>
+            </div>
+        )
+    }
 
     render(){
 
-        
+        const user = this.props.user
        
      
         return(
@@ -47,9 +150,8 @@ class Home extends Component{
                 <Grid container spacing={16} alignItems="center" direction="column" justify="center" >
                 <Grid item xs={12} sm={12} style={{marginTop:20}}>
     
-                <Button variant="contained" color="secondary"><Link to="/complains">View Complains</Link></Button>
-                <Button variant="contained" color="secondary"><Link to="/crimes">View Crimes</Link></Button>
-                <Button variant="contained" color="secondary"><Link to="/missingpersons">View Missing Person</Link></Button>
+                {user ? this.renderProps() : ''}
+
                 </Grid>
 
                  <Divider style={{marginTop:20}}/>
@@ -58,44 +160,93 @@ class Home extends Component{
  
                 </Grid>
                
-                <Grid container spacing={16} justify="center" >
-                  <Grid item xs={12} sm={8} style={{marginTop:20}} >
-                <Card>
-                <CardContent>
-                <Typography style={{float:'left'}} gutterBottom variant="headline" component="h2">
-                    Complain Report
-                </Typography>
-                <Typography style={{float:'right'}} gutterBottom variant="headline" component="h2">
-                    {this.props.complainList.length}
-                </Typography>
-                </CardContent>
-                    </Card>
+               
 
-                    <Card>
-                <CardContent>
-                <Typography style={{float:'left'}} gutterBottom variant="headline" component="h2">
-                    Crime Report
-                </Typography>
-                <Typography style={{float:'right'}} gutterBottom variant="headline" component="h2">
-                {this.props.crimeList.length}
-                </Typography>
-                </CardContent>
-                    </Card>
-
-                    <Card>
-                <CardContent>
-                <Typography style={{float:'left'}} gutterBottom variant="headline" component="h2">
-                    Missing Person
-                </Typography>
-                <Typography style={{float:'right'}} gutterBottom variant="headline" component="h2">
-                {this.props.missingList.length}
-                </Typography>
-                </CardContent>
-                    </Card>
-                </Grid>
+            <Grid container spacing={16} direction="row" justify="center">
+                
+                <Grid item item xs={10} sm={5}>
+                <FormControl fullWidth >
+                    <InputLabel htmlFor="report">Search By Report</InputLabel>
+                    <Select name="report" id="report"
+                        value={this.state.report}
+                        onChange={this.changeHandler}
+                        inputProps={{
+                        name: 'report',
+                        id: 'report',
+                        }}
+                    >
+                   
+                   {
+                        this.state.reportList.map(value => {
+                        return <MenuItem value={value}>{value}</MenuItem>
+                        })
+                    
+                    }
+                        
+                       
+                    </Select>
+                    </FormControl>
                 </Grid>
 
 
+                <Grid item xs={10} sm={5}>
+                <FormControl fullWidth>
+                    <InputLabel htmlFor="city">Which City</InputLabel>
+                    <Select
+                        value={this.state.city}
+                        onChange={this.searchHandler}
+                        inputProps={{
+                        name: 'city',
+                        id: 'city',
+                        }}
+                    >
+                    {
+                        this.props.city.map(value => {
+                        return <MenuItem value={value}>{value}</MenuItem>
+                        })
+                    
+                    }
+                    
+                    </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
+
+            <Grid container spacing={16} direction="row" justify="center">
+
+                      {
+                    this.props.searchList.map(value => {
+                        return (
+                            <Grid item xs={12} sm={4}  style={{marginTop:"20px"}}>
+                            <Card key={value.key}>
+                    {value.image? <img src={value.image} style={{width:"100%", height:200}} />: ''}
+                        <CardContent>
+                        <Typography gutterBottom variant="headline" component="h2">
+                        {value.title}
+                        {value.name? value.name : ''}
+                        </Typography>
+                        <Typography component="p">
+                        {value.description}
+                        </Typography>
+                        </CardContent>
+                        <CardActions>
+                        
+                        {
+                            this.state.admin == false ? '' : <Button  size="small" color="secondary" onClick={()=>this.reviewHandler(value.key)}>{value.status}</Button>
+                        }
+                        
+                        {
+                            this.state.user == false ? '' :  <Button  size="small" color="primary" >{value.status}</Button>
+                        }
+                        </CardActions>
+                    </Card>
+
+
+                </Grid>
+                        )
+                    })
+                }
+            </Grid>
             </div>
         )
     }
@@ -109,20 +260,27 @@ class Home extends Component{
 
 const mapStateToProps = (state) => {
     return{
+        city:state.crimeReducer.city,
         user:state.authReducer.user,
         isLoading:state.authReducer.isLoading,
-        crimeList:state.crimeReducer.crimeList,
-        missingList:state.crimeReducer.missingList,
-        complainList:state.crimeReducer.complainList
+        
+        crimeList:state.crimeReducer.userCrime,
+        missingList:state.crimeReducer.userMissing,
+        complainList:state.crimeReducer.userComplain,
+
+        searchList:state.crimeReducer.searchList
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return{
+        
         logout:()=>{return dispatch(authAction.signOut())},
-        getCrime: ()=>{return dispatch(crimeAction.getCrime())},
-        getMissing: ()=>{return dispatch(crimeAction.getMissing())},
-        getComplain: ()=>{return dispatch(crimeAction.getComplain())}
+        searchReport: (payload) => {return dispatch(crimeAction.searchReport(payload))},
+        getMyCrime:(userId) => {return dispatch(crimeAction.getUserCrime(userId))},
+        getMyComplain:(userId) => {return dispatch(crimeAction.getUserComplain(userId))},
+        getMissingPersons:(userId) => {return dispatch(crimeAction.getUserMissing(userId))},
+        status: statusUpdate => {return dispatch(crimeAction.updateStatus(statusUpdate))},
     }
 }
 

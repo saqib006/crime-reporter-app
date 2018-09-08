@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect}  from 'react-redux';
-import {Grid, Typography ,Paper, GridList,CardContent, Card, CardActions, Button, Divider} from '@material-ui/core';
+import {Grid, Typography ,CardContent, Card, CardActions, Button, Divider} from '@material-ui/core';
 import NavBar from '../container/navBar';
 import crimeAction from '../store/action/crimeAction';
 
@@ -18,7 +18,6 @@ class ComplainList extends Component{
            
         }
 
-        console.log(props)
 
        
      
@@ -149,11 +148,10 @@ class ComplainList extends Component{
 
 
 const mapStateToProps = (state) => {
-    console.log(state.user, 'user')
     return{
         user:state.authReducer.user,
         isLoading:state.authReducer.isLoading,
-        complainList:state.crimeReducer.complainList
+        complainList:state.crimeReducer.userComplain,
     }
 }
 

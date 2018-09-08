@@ -9,6 +9,9 @@ import Complain from './components/complain';
 import CrimeList from './components/crimeList';
 import MissingList from './components/missingList';
 import ComplainList from './components/complainList';
+import {connect} from 'react-redux';
+import crimeAction from './store/action/crimeAction';
+
 const Routing = () =>{
     return(
         <Router>
@@ -28,4 +31,13 @@ const Routing = () =>{
     )
 }
 
-export default Routing;
+const mapDispatchToProps = (dispatch) => {
+    return{
+        getCrime: ()=>{return dispatch(crimeAction.getCrime())},
+        getMissing: ()=>{return dispatch(crimeAction.getMissing())},
+        getComplain: ()=>{return dispatch(crimeAction.getComplain())},
+        
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Routing);

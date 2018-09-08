@@ -1,22 +1,32 @@
-import { Button,Grid, InputLabel , Input, FormControl, TextField} from '@material-ui/core';
+import { Button,Grid, InputLabel , Input, FormControl, TextField, Select, MenuItem} from '@material-ui/core';
 import crimeAction from '../store/action/crimeAction';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import NavBar from '../container/navBar';
+import firebase from '../store/firebase/config';
 
 class MissingReport extends Component{
     constructor(props){
         super(props);
         this.state = {
             name:'',
-            title:'',
             description:'',
+            file:'',
+            city:'',
             Drawer:false,
         }
-        console.log(props)
+
     }
     changeHandler = eve =>{
-        this.setState({[eve.target.name]: eve.target.value})
+
+    
+        switch (eve.target.name) {
+            case 'file':
+              this.setState({ file: eve.target.files[0] });
+              break;
+            default:
+              this.setState({ [eve.target.name]: eve.target.value });
+          }
     }
     toggleDrawer = open => {
         this.setState({ Drawer: open });
@@ -30,18 +40,42 @@ class MissingReport extends Component{
     }
 
     formHandler = () => {
-        let missingInfo = {
-            key:new Date().getTime(),
-            name:this.state.name,
-            title:this.state.title,
-            description:this.state.description
-        }
 
-        this.props.pushMissing(missingInfo)
+        const {name , description, file, city} = this.state;
+        let storage = firebase.storage()
+
+        const userId = this.props.user.uid
+
+        const uploadImage = storage.ref(`images/${file.name}`).put(this.state.file)
+        uploadImage.on('state_changed', (snapshot)=>{
+        },(error)=>{
+          console.log(error)
+        },()=>{
+          storage.ref('images').child(file.name).getDownloadURL().then(url => {
+            console.log('url',url)
+
+
+            if(url){
+                let missingInfo = {
+                    userId:userId,
+                    image:url,
+                    name:name,
+                    description:description,
+                    city:city
+                }
+        
+                console.log(missingInfo)
+                this.props.pushMissing(missingInfo)
+            }
+
+            
+          })
+        })
+
 
         this.setState({
             name:'',
-            title:'',
+            file:'',
             description:''
         })
 
@@ -57,7 +91,7 @@ class MissingReport extends Component{
                     <Grid item xs={12} sm={6}  style={{marginTop:"10%"}}>
                     
                     <FormControl fullWidth >
-                    <InputLabel htmlFor="name">Name</InputLabel>
+                    <InputLabel htmlFor="name">Missing Person Name</InputLabel>
                     <Input
                         id="name"
                         name="name"
@@ -67,15 +101,32 @@ class MissingReport extends Component{
                     />
                     </FormControl>
 
-                    <FormControl fullWidth >
-                    <InputLabel htmlFor="title">Title</InputLabel>
-                    <Input
-                        id="title"
-                        name="title"
-                        value={this.state.title}
+                    <FormControl fullWidth>
+                    <InputLabel htmlFor="city">City</InputLabel>
+                    <Select
+                        value={this.state.city}
                         onChange={this.changeHandler}
+                        inputProps={{
+                        name: 'city',
+                        id: 'city',
+                        }}
+                    >
+                    {
+                        this.props.city.map(value => {
+                        return <MenuItem value={value}>{value}</MenuItem>
+                        })
+                    
+                    }
                         
-                    />
+                        <MenuItem >sadsada</MenuItem>
+                    </Select>
+                    </FormControl>
+
+                    <FormControl fullWidth >
+                    <InputLabel htmlFor="file" >
+                    Upload Image
+                    </InputLabel>
+                    <Input id="file" type="file" name="file" onChange={this.changeHandler}/>
                     </FormControl>
 
                     <FormControl fullWidth >
@@ -110,6 +161,7 @@ class MissingReport extends Component{
 
 const mapStateToProps = (state) => {
     return{
+        city:state.crimeReducer.city,
         user:state.authReducer.user,
         isLoading:state.crimeReducer.isLoading
     }

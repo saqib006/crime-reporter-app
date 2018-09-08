@@ -1,4 +1,4 @@
-import { Button,Grid, InputLabel , Input, FormControl, TextField} from '@material-ui/core';
+import { Button,Grid, InputLabel , Input, FormControl, TextField, Select, MenuItem} from '@material-ui/core';
 import crimeAction from '../store/action/crimeAction';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -8,10 +8,10 @@ class Complain extends Component{
     constructor(props){
         super(props);
         this.state = {
-            name:'',
             title:'',
             description:'',
             Drawer:false,
+            city:''
         }
         console.log(props)
     }
@@ -29,18 +29,23 @@ class Complain extends Component{
       }
 
     formHandler = () => {
+
+        const {title, description, city} = this.state
+        const userId = this.props.user.uid
+
         let complainInfo = {
-            key: new Date().getTime(),
-            name:this.state.name,
-            title:this.state.title,
-            description:this.state.description,
+            userId: userId,
+            city:city,
+            title:title,
+            description:description,
            
         }
-
+        console.log(complainInfo)
+        
         this.props.pushComplain(complainInfo)
 
         this.setState({
-            name:'',
+            city:'',
             title:'',
             description:''
         })
@@ -56,16 +61,7 @@ class Complain extends Component{
                 <Grid container spacing={16} alignItems="center" direction="column" justify="center" >
                     <Grid item xs={12} sm={6}  style={{marginTop:"10%"}}>
                     
-                    <FormControl fullWidth >
-                    <InputLabel htmlFor="name">Name</InputLabel>
-                    <Input
-                        id="name"
-                        name="name"
-                        value={this.state.name}
-                        onChange={this.changeHandler}
-                        
-                    />
-                    </FormControl>
+                    
 
                     <FormControl fullWidth >
                     <InputLabel htmlFor="title">Title</InputLabel>
@@ -76,6 +72,27 @@ class Complain extends Component{
                         onChange={this.changeHandler}
                         
                     />
+                    </FormControl>
+
+
+                    <FormControl fullWidth>
+                    <InputLabel htmlFor="city">City</InputLabel>
+                    <Select
+                        value={this.state.city}
+                        onChange={this.changeHandler}
+                        inputProps={{
+                        name: 'city',
+                        id: 'city',
+                        }}
+                    >
+                    {
+                        this.props.city.map(value => {
+                        return <MenuItem value={value}>{value}</MenuItem>
+                        })
+                    
+                    }
+                        
+                    </Select>
                     </FormControl>
 
                     <FormControl fullWidth >
@@ -110,6 +127,7 @@ class Complain extends Component{
 
 const mapStateToProps = (state) => {
     return{
+        city:state.crimeReducer.city,
         user:state.authReducer.user,
         isLoading:state.crimeReducer.isLoading
     }

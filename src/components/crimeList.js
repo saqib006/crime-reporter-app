@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect}  from 'react-redux';
-import {Grid, Typography ,Paper, GridList,CardContent, Card, CardActions, Button, Divider} from '@material-ui/core';
+import {Grid, Typography ,CardContent, Card, CardActions, Button, Divider} from '@material-ui/core';
 import NavBar from '../container/navBar';
 import crimeAction from '../store/action/crimeAction';
 
@@ -15,12 +15,10 @@ class CrimeList extends Component{
             user:false,
         }
    
-        console.log(props)
+    
     }
 
-    componentWillMount(){
-        this.props.getCrime()
-    }
+    
     toggleDrawer = open => {
         this.setState({ Drawer: open });
       };
@@ -52,14 +50,18 @@ class CrimeList extends Component{
 
     reviewHandler = (value) => {
         console.log(value)
+        const userId = this.props.user.uid;
         let updateInfo = {
+            userId:userId,
             key:value,
             status:'Reviewd',
             arrayName:'crime'
         }
 
      
-          this.props.status(updateInfo)
+        this.props.status(updateInfo)
+     
+          
    
         
     }
@@ -104,7 +106,7 @@ class CrimeList extends Component{
         <CardActions>
         
         {
-            this.state.admin == false ? '' :  <Button  size="small" color="secondary" onClick={()=>this.reviewHandler(value.key)}>{value.status}</Button>
+            this.state.admin == false ? '' : <Button  size="small" color="secondary" onClick={()=>this.reviewHandler(value.key)}>{value.status}</Button>
         }
         
         {
@@ -150,7 +152,7 @@ const mapStateToProps = (state) => {
     return{
         user:state.authReducer.user,
         isLoading:state.authReducer.isLoading,
-        crimeList:state.crimeReducer.crimeList,
+        crimeList:state.crimeReducer.userCrime,
        
     }
 }
@@ -158,7 +160,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return{
         status: statusUpdate => {return dispatch(crimeAction.updateStatus(statusUpdate))},
-        getCrime: ()=>{return dispatch(crimeAction.getCrime())}
+      
     }
 }
 

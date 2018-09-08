@@ -29,6 +29,7 @@ class NavBAR extends Component{
                 Drawer:false
             })
         }
+        this.props.checkUser()
     }
 
    
@@ -105,7 +106,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return{
-        logout:()=>{return dispatch(authAction.signOut())}
+        logout:()=>{return dispatch(authAction.signOut())},
+        checkUser: ()=> {return dispatch(authAction.checkUser())}
     }
 }
 

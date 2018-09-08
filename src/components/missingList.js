@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect}  from 'react-redux';
-import {Grid, Typography ,Paper, GridList,CardContent, Card, CardActions, Button, Divider} from '@material-ui/core';
+import {Grid, Typography ,CardContent, Card, CardActions, Button, Divider} from '@material-ui/core';
 import NavBar from '../container/navBar';
 import crimeAction from '../store/action/crimeAction';
 
@@ -16,7 +16,7 @@ class MissingList extends Component{
             user:false,
         }
 
-        console.log(props)
+        
     }
 
     componentWillMount(){
@@ -59,14 +59,9 @@ class MissingList extends Component{
             arrayName:'missing'
         }
 
-        setTimeout(() => {
-            this.props.status(updateInfo)
-        }, 1000);
-            
-        
-     
-      
-   
+       
+        this.props.status(updateInfo)
+       
         
     }
 
@@ -101,10 +96,11 @@ class MissingList extends Component{
         return (
             <Grid item xs={12} sm={4}  style={{marginTop:"20px"}} key={value.key}>
             <Card >
-       
+
+        <img style={{width:"100%"}}  height="200" src={value.image} alt={value.title}/>
         <CardContent>
         <Typography gutterBottom variant="headline" component="h2">
-           {value.title}
+           {value.name}
         </Typography>
         <Typography component="p">
            {value.description}
@@ -157,7 +153,7 @@ const mapStateToProps = (state) => {
     return{
         user:state.authReducer.user,
         isLoading:state.authReducer.isLoading,
-        missingList:state.crimeReducer.missingList,
+        missingList:state.crimeReducer.userMissing,
     
     }
 }
